@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import ListingsPage from "./pages/ListingsPage";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import ListingsPage from './pages/ListingsPage'
 
 export default function App() {
   return (
@@ -10,5 +10,5 @@ export default function App() {
         <Route path="/listings" element={<ListingsPage />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
