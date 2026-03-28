@@ -1,51 +1,151 @@
+import { useEffect, useState } from "react";
+
+const showcaseSlides = [
+  {
+    kind: "logo",
+    title: "LFD Management LLC",
+    subtitle:
+      "Professional property management across Southern California with a focus on leasing, operations, and responsive tenant support.",
+    image:
+      "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    kind: "photo",
+    title: "Inglewood Market Presence",
+    subtitle:
+      "Serving communities near major entertainment, employment, and growth corridors, including the SoFi Stadium area.",
+    image:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    kind: "photo",
+    title: "Hawthorne and Innovation Corridor",
+    subtitle:
+      "Positioned near major employers and rapidly evolving South Bay markets, including the SpaceX and Hawthorne area.",
+    image:
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    kind: "photo",
+    title: "Coastal Reach",
+    subtitle:
+      "Supporting residents and properties across desirable South Bay communities, including areas connected to Redondo Beach.",
+    image:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    kind: "photo",
+    title: "Regional Expansion",
+    subtitle:
+      "Extending management presence into broader Southern California markets, including the Riverside County region.",
+    image:
+      "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1600&q=80",
+  },
+];
+
+const locations = ["Inglewood", "Gardena", "Torrance", "Hawthorne", "Los Angeles", "Redondo Beach", "Palm Desert", "Cathedral City", "Bermuda Dunes", "La Quinta"];
+
+const valueProps = [
+  {
+    title: "Professional Management",
+    text: "Hands-on property management with responsive communication, operational clarity, and market-aware leasing support.",
+  },
+  {
+    title: "Efficient Leasing Process",
+    text: "From inquiry to application, the process is designed to be straightforward, mobile-friendly, and easy to navigate.",
+  },
+  {
+    title: "Regional Market Reach",
+    text: "Serving key Southern California markets with local familiarity, practical oversight, and consistent property operations.",
+  },
+];
+
+const leasingSteps = [
+  "Browse current availability and compare options.",
+  "Review details and submit your inquiry or application.",
+  "Complete the application through AppFolio.",
+  "Receive updates from the leasing team as your application moves forward.",
+];
+
 export default function HomePage() {
-  const featuredListings = [
-    {
-      title: "Modern 1 bedroom",
-      price: "$1,700/mo",
-      details: "1 Bed • 1 Bath • Pet Friendly",
-      image:
-        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      title: "Renovated 1 Bedroom in Hawthorne",
-      price: "$1,800/mo",
-      details: "1 Bed • 1 Bath • 1 Parking",
-      image:
-        "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      title: "Spacious 2 Bedroom in Gardena",
-      price: "$2,350/mo",
-      details: "2 Bed • 1 Bath • 1 Parking Space",
-      image:
-        "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
-    },
-    ];
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [status, setStatus] = useState({
+    submitting: false,
+    success: "",
+    error: "",
+  });
 
-  const locations = ["Inglewood", "Gardena", "Torrance", "Hawthorne", "Los Angeles", "Redondo Beach", "Palm Desert", "Cathedral City", "Bermuda Dunes", "La Quinta"];
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % showcaseSlides.length);
+    }, 4000);
 
-  const valueProps = [
-    {
-      title: "Well-Maintained Homes",
-      text: "Clean, professionally managed properties with responsive maintenance and straightforward leasing.",
-    },
-    {
-      title: "Simple Leasing Process",
-      text: "From availability to application, the process is clear, fast, and built for mobile users.",
-    },
-    {
-      title: "Local Management",
-      text: "A hands-on team focused on tenant communication, property upkeep, and long-term value.",
-    },
-  ];
+    return () => clearInterval(interval);
+  }, []);
 
-  const leasingSteps = [
-    "Browse active vacancies and compare features.",
-    "Schedule a tour or submit an inquiry online.",
-    "Complete the application and upload documents.",
-    "Receive updates quickly from the leasing team.",
-  ];
+  const current = showcaseSlides[currentSlide];
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ submitting: true, success: "", error: "" });
+
+    try {
+      const payload = new FormData();
+      payload.append("access_key", "YOUR_WEB3FORMS_ACCESS_KEY");
+      payload.append("subject", "New LFD Management LLC Lead");
+      payload.append("from_name", "LFD Management LLC Website");
+      payload.append("name", formData.name);
+      payload.append("email", formData.email);
+      payload.append("phone", formData.phone);
+      payload.append("message", formData.message);
+
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: payload,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setStatus({
+          submitting: false,
+          success: "Your message was sent successfully.",
+          error: "",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        setStatus({
+          submitting: false,
+          success: "",
+          error: "Submission failed. Please try again.",
+        });
+      }
+    } catch (error) {
+      setStatus({
+        submitting: false,
+        success: "",
+        error: "Submission failed. Please try again.",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50 text-neutral-900">
@@ -53,7 +153,9 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div>
             <div className="text-xl font-semibold tracking-tight">LFD Management LLC</div>
-            <div className="text-sm text-neutral-500">Modern rentals across Los Angeles County and Riveside County</div>
+            <div className="text-sm text-neutral-500">
+              Professional property management across Southern California
+            </div>
           </div>
 
           <nav className="hidden gap-6 text-sm font-medium md:flex">
@@ -81,26 +183,45 @@ export default function HomePage() {
       </header>
 
       <section id="home" className="relative isolate overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1800&q=80')",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/55" />
+        {current.kind === "logo" ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${current.image})` }}
+          />
+        ) : (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${current.image})` }}
+          />
+        )}
+
+        <div className={`absolute inset-0 ${current.kind === "logo" ? "bg-white/35" : "bg-black/55"}`} />
 
         <div className="relative mx-auto grid max-w-7xl gap-10 px-6 py-24 md:grid-cols-2 md:py-32">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1 text-sm text-white backdrop-blur">
+            <div
+              className={`mb-4 inline-flex rounded-full border px-4 py-1 text-sm backdrop-blur ${
+                current.kind === "logo"
+                  ? "border-neutral-300 bg-white/80 text-neutral-700"
+                  : "border-white/20 bg-white/10 text-white"
+              }`}
+            >
               Leasing made easier
             </div>
 
-            <h1 className="text-4xl font-semibold leading-tight text-white md:text-6xl">
+            <h1
+              className={`text-4xl font-semibold leading-tight md:text-6xl ${
+                current.kind === "logo" ? "text-neutral-900" : "text-white"
+              }`}
+            >
               Thoughtful rental living with a clean, modern leasing experience.
             </h1>
 
-            <p className="mt-6 text-base leading-7 text-neutral-100 md:text-lg">
+            <p
+              className={`mt-6 text-base leading-7 md:text-lg ${
+                current.kind === "logo" ? "text-neutral-700" : "text-neutral-100"
+              }`}
+            >
               Discover professionally managed homes, transparent communication, and an application
               process designed to move quickly.
             </p>
@@ -108,7 +229,7 @@ export default function HomePage() {
             <div className="mt-8 flex flex-wrap gap-4">
               <a
                 href="/listings"
-                className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-neutral-900 shadow-lg transition hover:bg-neutral-100"
+                className="rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-neutral-800"
               >
                 Browse Available Rentals
               </a>
@@ -116,42 +237,59 @@ export default function HomePage() {
                 href="https://lfdpm.appfolio.com/listings"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-2xl border border-white/40 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                className={`rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                  current.kind === "logo"
+                    ? "border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-100"
+                    : "border border-white/40 text-white hover:bg-white/10"
+                }`}
               >
                 Apply Now
               </a>
             </div>
           </div>
 
-          <div className="self-end rounded-3xl border border-white/15 bg-white/10 p-6 text-white shadow-2xl backdrop-blur">
-            <div className="text-sm uppercase tracking-[0.18em] text-neutral-200">
-              Quick Search
-            </div>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <input
-                className="rounded-2xl border border-white/15 bg-white/15 px-4 py-3 text-sm text-white placeholder:text-neutral-200 focus:outline-none"
-                placeholder="City or neighborhood"
-              />
-              <select className="rounded-2xl border border-white/15 bg-white/15 px-4 py-3 text-sm text-white focus:outline-none">
-                <option>Bedrooms</option>
-                <option>Studio</option>
-                <option>1 Bedroom</option>
-                <option>2 Bedrooms</option>
-                <option>3+ Bedrooms</option>
-              </select>
-              <select className="rounded-2xl border border-white/15 bg-white/15 px-4 py-3 text-sm text-white focus:outline-none">
-                <option>Budget</option>
-                <option>Up to $2,000</option>
-                <option>$2,000 - $2,500</option>
-                <option>$2,500 - $3,000</option>
-                <option>$3,000+</option>
-              </select>
-              <a
-                href="/listings"
-                className="rounded-2xl bg-neutral-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition hover:opacity-90"
-              >
-                Search Rentals
-              </a>
+          <div
+            className={`self-end rounded-3xl border p-6 shadow-2xl backdrop-blur ${
+              current.kind === "logo"
+                ? "border-neutral-200 bg-white/90 text-neutral-900"
+                : "border-white/15 bg-white/10 text-white"
+            }`}
+          >
+            {current.kind === "logo" ? (
+              <div className="flex min-h-[280px] flex-col items-center justify-center rounded-3xl border border-neutral-200 bg-white p-10 text-center">
+                <div className="mb-6 text-4xl font-semibold tracking-tight">LFD Management LLC</div>
+                <div className="max-w-md text-sm leading-7 text-neutral-600">
+                  Professional property management with a polished leasing experience and strong
+                  regional market presence.
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="text-sm uppercase tracking-[0.18em] text-neutral-200">
+                  Featured Area
+                </div>
+                <h2 className="mt-4 text-2xl font-semibold">{current.title}</h2>
+                <p className="mt-4 text-sm leading-7 text-neutral-100">{current.subtitle}</p>
+              </>
+            )}
+
+            <div className="mt-8 flex gap-2">
+              {showcaseSlides.map((slide, index) => (
+                <button
+                  key={slide.title}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`h-3 w-3 rounded-full transition ${
+                    currentSlide === index
+                      ? current.kind === "logo"
+                        ? "bg-neutral-900"
+                        : "bg-white"
+                      : current.kind === "logo"
+                      ? "bg-neutral-300"
+                      : "bg-white/40"
+                  }`}
+                  aria-label={`Go to ${slide.title}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -185,57 +323,76 @@ export default function HomePage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                Featured listings
+                Brand Showcase
               </p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-                Available homes that stand out.
+                Local reach. Professional management. Strong market presence.
               </h2>
             </div>
 
             <a
-              href="/listings"
-              className="text-sm font-semibold text-neutral-900 underline underline-offset-4"
+              href="https://lfdpm.appfolio.com/listings"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
-              See all live listings
+              Apply Now
             </a>
           </div>
 
-          <div className="mt-10 grid gap-8 md:grid-cols-3">
-            {featuredListings.map((listing) => (
-              <div
-                key={listing.title}
-                className="overflow-hidden rounded-3xl border border-neutral-200 bg-neutral-50 shadow-sm transition hover:-translate-y-1"
-              >
+          <div className="mt-10 overflow-hidden rounded-3xl border border-neutral-200 bg-neutral-50 shadow-sm">
+            <div className="grid md:grid-cols-2">
+              <div className="h-[420px] overflow-hidden bg-neutral-200">
                 <img
-                  src={listing.image}
-                  alt={listing.title}
-                  className="h-64 w-full object-cover"
+                  src={current.image}
+                  alt={current.title}
+                  className="h-full w-full object-cover"
                 />
-                <div className="p-6">
-                  <div className="text-sm font-medium text-neutral-500">Now Leasing</div>
-                  <h3 className="mt-2 text-xl font-semibold">{listing.title}</h3>
-                  <p className="mt-3 text-sm text-neutral-600">{listing.details}</p>
-                  <div className="mt-5 flex items-center justify-between">
-                    <span className="text-lg font-semibold">{listing.price}</span>
+              </div>
+
+              <div className="flex items-center p-10">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                    Featured Area
+                  </p>
+                  <h3 className="mt-3 text-3xl font-semibold tracking-tight">{current.title}</h3>
+                  <p className="mt-5 max-w-xl text-sm leading-7 text-neutral-600">
+                    {current.subtitle}
+                  </p>
+
+                  <div className="mt-8 flex flex-wrap gap-4">
                     <a
                       href="/listings"
-                      className="rounded-2xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
+                      className="rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
                     >
-                      View Details
+                      View Live Listings
                     </a>
+
+                    <a
+                      href="https://lfdpm.appfolio.com/listings"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-2xl border border-neutral-300 px-5 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100"
+                    >
+                      Apply Now
+                    </a>
+                  </div>
+
+                  <div className="mt-8 flex gap-2">
+                    {showcaseSlides.map((slide, index) => (
+                      <button
+                        key={slide.title}
+                        onClick={() => setCurrentSlide(index)}
+                        className={`h-3 w-3 rounded-full transition ${
+                          currentSlide === index ? "bg-neutral-900" : "bg-neutral-300"
+                        }`}
+                        aria-label={`Go to ${slide.title}`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-8">
-            <a
-              href="/listings"
-              className="inline-flex rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-              See All Available Rentals
-            </a>
+            </div>
           </div>
         </div>
       </section>
@@ -247,11 +404,11 @@ export default function HomePage() {
               Locations
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-              Rentals across Los Angeles and Coachella neighborhoods.
+              Management across strong Southern California markets.
             </h2>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-600">
-              Explore homes in central, accessible, and fast-moving rental markets with convenient
-              access to work, transit, and everyday essentials.
+              Serving key neighborhoods and regions with practical operations, local familiarity,
+              and a streamlined leasing experience.
             </p>
           </div>
 
@@ -275,7 +432,7 @@ export default function HomePage() {
               Leasing process
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-              Straightforward from first click to signed lease.
+              Straightforward from first click to completed application.
             </h2>
           </div>
 
@@ -333,44 +490,73 @@ export default function HomePage() {
             </p>
             <div className="mt-8 space-y-3 text-sm text-neutral-700">
               <p>
-                <span className="font-semibold">Phone:</span> (424) 220-1030 or text us at (562) 380-0952
+                <span className="font-semibold">Phone:</span> (424) 220-1030
               </p>
               <p>
-                <span className="font-semibold">Email:</span> pm@lfdmgmt.com
+                <span className="font-semibold">Email:</span> PM@LFDMGMT.COM
+              </p>
+              <p>
+                <span className="font-semibold">Text Line:</span> (562) 380-0952
               </p>
               <p>
                 <span className="font-semibold">Office Hours:</span> Monday through Friday, 9:00
-                AM to 5:00 PM
+                AM to 6:00 PM
               </p>
             </div>
           </div>
 
-          <form className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-sm">
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-sm"
+          >
             <div className="grid gap-4">
               <input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 className="rounded-2xl border border-neutral-200 px-4 py-3 text-sm focus:outline-none"
                 placeholder="Full name"
+                required
               />
               <input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="rounded-2xl border border-neutral-200 px-4 py-3 text-sm focus:outline-none"
                 placeholder="Email address"
+                required
               />
               <input
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 className="rounded-2xl border border-neutral-200 px-4 py-3 text-sm focus:outline-none"
                 placeholder="Phone number"
               />
               <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
                 className="min-h-[140px] rounded-2xl border border-neutral-200 px-4 py-3 text-sm focus:outline-none"
                 placeholder="Tell us what you're looking for"
+                required
               />
-              <a
-                href="https://lfdpm.appfolio.com/listings"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-2xl bg-neutral-900 px-5 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+              <button
+                type="submit"
+                disabled={status.submitting}
+                className="rounded-2xl bg-neutral-900 px-5 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Apply Through AppFolio
-              </a>
+                {status.submitting ? "Sending..." : "Send Inquiry"}
+              </button>
+
+              {status.success ? (
+                <p className="text-sm font-medium text-green-600">{status.success}</p>
+              ) : null}
+
+              {status.error ? (
+                <p className="text-sm font-medium text-red-600">{status.error}</p>
+              ) : null}
             </div>
           </form>
         </div>
